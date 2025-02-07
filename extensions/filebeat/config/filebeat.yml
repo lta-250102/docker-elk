@@ -44,6 +44,24 @@ output.elasticsearch:
   hosts: [ http://elasticsearch:9200 ]
   username: filebeat_internal
   password: ${FILEBEAT_INTERNAL_PASSWORD}
+  indices:
+    - index: "filebeat-elastic-%{[agent.version]}-%{+yyyy.MM.dd}"
+      when.or:
+        - equals:
+            container.image.name: docker-elk-filebeat
+        - equals:
+            container.image.name: docker-elk-elasticsearch
+        - equals:
+            container.image.name: docker-elk-kibana
+        - equals:
+            container.image.name: docker-elk-logstash
+        - equals:
+            container.image.name: docker-elk-heartbeat
+        - equals:
+            container.image.name: docker-elk-metricbeat
+        - equals:
+            container.image.name: docker-elk-curator
+    - index: "filebeat-%{[container.image.name]}-%{+yyyy.MM.dd}"
 
 ## HTTP endpoint for health checking
 ## https://www.elastic.co/guide/en/beats/filebeat/current/http-endpoint.html
